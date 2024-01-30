@@ -1,0 +1,13 @@
+
+  <div class="container">
+    <div class="col-12">
+      <h1>Weather Forecast for <%= @forecast[:zip_code] %></h1>
+      <p><small>(last updated:<%= @forecast[:updated_at] %>)</small></p>
+      <p><strong>Current Temperature: </strong><%= @forecast[:current_temperature]%></p>
+      <p><strong>7 Day Forecast</strong></p>
+        <% @forecast[:forecast_temperature].each_with_index do |t,i| %>
+          <p><%= Date.today.next_day(i).strftime("%A") %>: <%= t %></p>
+        <% end %>
+    </div>
+    <a href="/" class="btn btn-sm btn-primary">New Forecast</a>
+  </div>

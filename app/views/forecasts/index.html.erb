@@ -1,0 +1,63 @@
+
+  <div class="container">
+    <div class="col-12">
+      <h1>United States Weather Forecast</h1>
+      <%= form_with(url:'/forecasts', :method => :post, :id => 'forecast', :html => {:onsubmit=>'addressSelected()' }) do |f| %>
+        <%= f.text_field :address, id: "autocomplete-input", class: "form-control", placeholder: "Enter your address" %>        
+        <%= f.hidden_field :zip_code, id: "zip_code" %>
+        <%= f.hidden_field :lat, id: "lat" %>
+        <%= f.hidden_field :lng, id: "lng" %>
+      <% end %>
+    </div>
+  </div>
+  <script>
+    function initialize() {
+      // Create the autocomplete object, restricting the search predictions to addresses in the United States
+      const autocomplete = new google.maps.places.Autocomplete(
+          document.getElementById('autocomplete-input'),
+          { types: ['address'],
+            componentRestrictions: {country: "us"}}
+      );
+
+      // Optional: Set the bounds to restrict the autocomplete to a specific area.
+      // const bounds = new google.maps.LatLngBounds(
+      //     new google.maps.LatLng(37.7749, -122.4194),
+      //     new google.maps.LatLng(37.8049, -122.3894)
+      // );
+      // autocomplete.setBounds(bounds);
+      autocomplete.addListener('place_changed', addressSelected);
+    
+
+    function addressSelected() {
+      const place = autocomplete.getPlace();
+      // Check if place has latitude and longitude
+      if (place.geometry.location) {
+        document.getElementById('lat').value = place.geometry.location.lat();
+        document.getElementById('lng').value = place.geometry.location.lng();
+        // Check if place has address components
+        if (place.address_components) {
+          // Iterate through address components to find postal_code
+          for (var i = 0; i < place.address_components.length; i++) {
+            var component = place.address_components[i];
+
+            // Check if the component type is postal_code
+            if (component.types.includes('postal_code')) {
+              document.getElementById('zip_code').value = component.short_name;
+            }
+          }
+        }
+    
+        // auto submit form when zip, lat and long have been set
+        if (document.getElementById('zip_code').value && document.getElementById('lat').value && document.getElementById('lng').value) {
+          document.getElementById("forecast").submit();
+        }
+      }
+    }
+
+    }
+
+    // Trigger the initialize function when the page loads.
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+  </script>
+
